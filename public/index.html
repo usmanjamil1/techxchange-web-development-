@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechXChange - Technology Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #1e3c72;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: linear-gradient(145deg, #ffffff, #f8f9ff);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(30, 60, 114, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+        }
+
+        .card h3 {
+            color: #1e3c72;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .category {
+            display: inline-block;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .rating {
+            color: #ffa500;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1e3c72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        /* Stock indicator */
+        .stock {
+            background: rgba(30, 60, 114, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stock.low {
+            background: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+
+        .stock.out {
+            background: rgba(220, 53, 69, 0.2);
+            color: #721c24;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .nav {
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+        /* Additional Visual Enhancements */
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f0f2f5, #e1e8ed);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #1e3c72;
+        }
+
+        .seller-info {
+            background: rgba(30, 60, 114, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-text {
+            font-style: italic;
+            color: #555;
+            background: rgba(30, 60, 114, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.online {
+            background-color: #28a745;
+        }
+
+        .status-indicator.offline {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>TechXChange</h1>
+            <p>Your Premier Technology Marketplace</p>
+            <nav class="nav">
+                <button class="nav-btn active" onclick="showSection('products', this)">📱 Products</button>
+                <button class="nav-btn" onclick="showSection('sellers', this)">🏪 Sellers</button>
+                <button class="nav-btn" onclick="showSection('reviews', this)">⭐ Reviews</button>
+                <button class="nav-btn" onclick="login()">👨🏻‍💻Login</button>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div id="content">
+                <div class="loading">Connecting to server...</div>
+            </div>
+        </main>
+    </div>
+<div id="productModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+    <div style="background:white; padding:20px; border-radius:15px; width:400px; max-width:90%; position:relative;">
+        <span id="closeModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.5rem;">&times;</span>
+        <div id="modalContent"></div>
+        <button id="addToCartBtn" style="margin-top:15px; padding:10px 15px; background:#1e3c72; color:white; border:none; border-radius:8px; cursor:pointer;">Add to Cart</button>
+    </div>
+</div>
+<div id="cartIcon" style="position:fixed; top:20px; right:20px; z-index:1000; cursor:pointer;">
+    🛒 <span id="cartCount" style="color: white; font-weight: bold;">0</span>
+</div>
+
+<div id="cartPage" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+    <div style="background:white; padding:20px; border-radius:15px; width:400px; max-width:90%; position:relative; max-height:90%; overflow-y:auto;">
+        <span id="closeCart" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.5rem;">&times;</span>
+        <h2>🛒 Your Cart</h2>
+        <div id="cartItems"></div>
+
+        <div id="buyerInfo" style="margin-top:15px; display:none;">
+            <h3>Buyer Info</h3>
+            <input id="buyerName" type="text" placeholder="Name" autocomplete="off"  style="width:100%; padding:8px; margin:5px 0;">
+            <input id="buyerMobile" type="text" placeholder="Mobile Number" autocomplete="off"  style="width:100%; padding:8px; margin:5px 0;">
+            <input id="buyerEmail" type="email" placeholder="Email" autocomplete="off"  style="width:100%; padding:8px; margin:5px 0;">
+            <input id="buyerAddress" type="text" placeholder="Address" autocomplete="off"  style="width:100%; padding:8px; margin:5px 0;">
+            <button id="buyBtn" style="margin-top:10px; padding:10px 15px; background:#2a5298; color:white; border:none; border-radius:8px; cursor:pointer;">Buy Now</button>
+        </div>
+    </div>
+</div>
+
+<div id="purchaseModal" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+    z-index:2000;
+    opacity:0;
+    transition: opacity 0.3s ease;
+">
+    <div style="
+        background:white;
+        padding:30px;
+        border-radius:20px;
+        width:400px;
+        max-width:90%;
+        text-align:center;
+        transform:scale(0.7);
+        transition: transform 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid rgba(30,60,114,0.2);
+    ">
+        <h2 style="color:#1e3c72; margin-bottom:15px;">🎉 Purchase Successful!</h2>
+        <p id="purchaseMsg" style="color:#333; margin-bottom:20px;"></p>
+        <button id="closePurchaseModal" style="
+            padding:10px 20px;
+            border:none;
+            border-radius:12px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color:white;
+            font-weight:600;
+            cursor:pointer;
+            transition: all 0.3s ease;
+        ">Close</button>
+    </div>
+</div>
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:3000/api';
+        let currentSection = 'products';
+
+        // API Helper Functions
+        async function makeAPIRequest(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Request failed:', error);
+                throw error;
+            }
+        }
+
+        // API Functions
+        async function getProducts(filters = {}) {
+            const queryParams = new URLSearchParams(filters);
+            return await makeAPIRequest(`/products?${queryParams}`);
+        }
+
+        async function getSellers(filters = {}) {
+            const queryParams = new URLSearchParams(filters);
+            return await makeAPIRequest(`/sellers?${queryParams}`);
+        }
+
+        async function getReviews(filters = {}) {
+            const queryParams = new URLSearchParams(filters);
+            return await makeAPIRequest(`/reviews?${queryParams}`);
+        }
+
+        async function getAnalytics() {
+            return await makeAPIRequest('/analytics/overview');
+        }
+
+        async function checkServerHealth() {
+            try {
+                await makeAPIRequest('/health');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function login() {
+            window.location.href = 'login.html';
+        }
+        // Show section function
+        async function showSection(section, clickedElement = null) {
+            // Update active button
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Find the clicked button or the button for this section
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            } else {
+                // Find button by section name when called programmatically
+                const targetButton = document.querySelector(`[onclick="showSection('${section}')"]`);
+                if (targetButton) {
+                    targetButton.classList.add('active');
+                }
+            }
+            
+            currentSection = section;
+            
+            // Show loading
+            document.getElementById('content').innerHTML = `<div class="loading">Loading ${section} from server...</div>`;
+            
+            try {
+                let response;
+                switch (section) {
+                    case 'products':
+                        response = await getProducts();
+                        renderProducts(response.data);
+                        break;
+                    case 'sellers':
+                        response = await getSellers();
+                        renderSellers(response.data);
+                        break;
+                    case 'reviews':
+                        response = await getReviews();
+                        renderReviews(response.data);
+                        break;
+                }
+            } catch (error) {
+                renderError(section, error.message);
+            }
+        }
+
+        // Render functions
+        function renderProducts(products) {
+            const html = `
+                <h2 class="section-title">🛍️ Technology Products (${products.length} items)</h2>
+                <div class="grid">
+                    ${products.map(product => `
+                        <div class="card">
+                            <div class="product-image">${product.icon}</div>
+                            <div class="category">${product.category}</div>
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                            <div class="seller-info">
+                                <p><strong>🏪 Seller:</strong> ${product.seller}</p>
+                            </div>
+                            <div class="stock ${getStockClass(product.stock)}">
+                                📦 Stock: ${product.stock} units ${getStockStatus(product.stock)}
+                            </div>
+                            <div class="price">£${product.price.toLocaleString()}</div>
+                            <p style="color: #999; font-size: 0.8rem; margin-top: 10px;">
+                                Updated: ${new Date(product.updatedAt).toLocaleDateString()}
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function renderSellers(sellers) {
+            const html = `
+                <h2 class="section-title">🏪 Trusted Sellers (${sellers.length} verified)</h2>
+                <div class="grid">
+                    ${sellers.map(seller => `
+                        <div class="card">
+                            <div class="product-image">${seller.icon}</div>
+                            <h3>
+                                ${seller.name}
+                                ${seller.verified ? '<span style="color: #28a745;">✓</span>' : ''}
+                            </h3>
+                            <p><strong>📍 Location:</strong> ${seller.location}</p>
+                            <p><strong>✉️ Contact:</strong> ${seller.contact}</p>
+                            <p><strong>📦 Total Sales:</strong> ${seller.totalSales.toLocaleString()}</p>
+                            <p><strong>📅 Joined:</strong> ${new Date(seller.joinDate).toLocaleDateString()}</p>
+                            <div class="rating">
+                                <span>${'★'.repeat(Math.floor(seller.rating))}${'☆'.repeat(5-Math.floor(seller.rating))}</span>
+                                <span class="rating-text">${seller.rating}/5</span>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span class="status-indicator ${seller.verified ? 'online' : 'offline'}"></span>
+                                ${seller.verified ? 'Verified Seller' : 'Pending Verification'}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function renderReviews(reviews) {
+            const html = `
+                <h2 class="section-title">⭐ Customer Reviews (${reviews.length} reviews)</h2>
+                <div class="grid">
+                    ${reviews.map(review => `
+                        <div class="card">
+                            <div class="review-header">
+                                <h3>
+                                    ${review.reviewer}
+                                    ${review.verified ? '<span style="color: #28a745; font-size: 0.8em;">✓ Verified</span>' : ''}
+                                </h3>
+                                <span style="color: #666; font-size: 0.9rem;">${new Date(review.date).toLocaleDateString()}</span>
+                            </div>
+                            <div class="rating">
+                                <span>${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
+                                <span class="rating-text">${review.rating}/5</span>
+                            </div>
+                            <p><strong>📱 Product:</strong> ${review.productName}</p>
+                            <div class="review-text">
+                                "${review.text}"
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function renderError(section, errorMessage) {
+            const isServerDown = errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError');
+            
+            const html = `
+                <div class="error">
+                    <h3>❌ Unable to Load ${section.charAt(0).toUpperCase() + section.slice(1)}</h3>
+                    <p>${isServerDown ? 'Server is not responding. Please make sure the backend server is running on http://localhost:3000' : errorMessage}</p>
+                    <button class="nav-btn" onclick="showSection('${section}', this)" style="margin-top: 15px;">
+                        🔄 Try Again
+                    </button>
+                </div>
+                ${isServerDown ? `
+                    <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 10px; margin-top: 20px;">
+                        <h4>🚀 To start the backend server:</h4>
+                        <ol style="margin: 15px 0; padding-left: 20px;">
+                            <li>Save the backend code as <code>server.js</code></li>
+                            <li>Run: <code>npm install express cors</code></li>
+                            <li>Run: <code>node server.js</code></li>
+                            <li>Server will start on http://localhost:3000</li>
+                        </ol>
+                    </div>
+                ` : ''}
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
+
+        // Helper functions
+        function getStockClass(stock) {
+            if (stock === 0) return 'out';
+            if (stock < 10) return 'low';
+            return '';
+        }
+
+        function getStockStatus(stock) {
+            if (stock === 0) return '(Out of Stock)';
+            if (stock < 10) return '(Low Stock)';
+            return '(In Stock)';
+        }
+
+        // Initialize app
+        window.addEventListener('load', async () => {
+            // Check server health first
+            const serverOnline = await checkServerHealth();
+            
+            if (serverOnline) {
+                showSection('products');
+            } else {
+                renderError('products', 'Failed to connect to server');
+            }
+        });
+
+        // Add some interactive effects
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                    card.style.transform = `translateY(-5px) rotateX(${(y - rect.height/2) / 20}deg) rotateY(${(x - rect.width/2) / 20}deg)`;
+                } else {
+                    card.style.transform = '';
+                }
+            });
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showSection('products');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showSection('sellers');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showSection('reviews');
+                        break;
+                }
+            }
+        });
+
+           let cart = [];
+
+    function renderProducts(products) {
+        const html = `
+            <h2 class="section-title">🛍️ Technology Products (${products.length} items)</h2>
+            <div class="grid">
+                ${products.map(product => `
+                    <div class="card" onclick="openProductModal(${JSON.stringify(product).replaceAll('"', '&quot;')})">
+                        <div class="product-image">${product.icon}</div>
+                        <div class="category">${product.category}</div>
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <div class="seller-info">
+                            <p><strong>🏪 Seller:</strong> ${product.seller}</p>
+                        </div>
+                        <div class="stock ${getStockClass(product.stock)}">
+                            📦 Stock: ${product.stock} units ${getStockStatus(product.stock)}
+                        </div>
+                        <div class="price">£${product.price.toLocaleString()}</div>
+                        <p style="color: #999; font-size: 0.8rem; margin-top: 10px;">
+                            Updated: ${new Date(product.updatedAt).toLocaleDateString()}
+                        </p>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        document.getElementById('content').innerHTML = html;
+    }
+
+    function openProductModal(product) {
+        const modal = document.getElementById('productModal');
+        const content = document.getElementById('modalContent');
+        modal.style.display = 'flex';
+        content.innerHTML = `
+         <div class="product-image" bis_skin_checked="1">${product.icon || ''}</div>
+           
+        <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <p>Price: £${product.price.toLocaleString()}</p>
+            <p>Stock: ${product.stock}</p>
+        `;
+
+        document.getElementById('addToCartBtn').onclick = () => {
+            cart.push(product);
+            updateCartCount();
+            modal.style.display = 'none';
+        }
+    }
+
+    function updateCartCount() {
+        document.getElementById('cartCount').innerText = cart.length;
+    }
+
+    document.getElementById('closeModal').onclick = () => {
+        document.getElementById('productModal').style.display = 'none';
+    };
+
+    document.getElementById('cartIcon').onclick = () => {
+        showCartPage();
+    };
+
+  
+
+    document.getElementById('closeCart').onclick = () => {
+        document.getElementById('cartPage').style.display = 'none';
+    };
+
+    function showCartPage() {
+        const cartPage = document.getElementById('cartPage');
+        const cartItems = document.getElementById('cartItems');
+        const buyerInfo = document.getElementById('buyerInfo');
+
+        cartPage.style.display = 'flex';
+
+        if(cart.length === 0) {
+            cartItems.innerHTML = '<p>Your cart is empty</p>';
+            buyerInfo.style.display = 'none';
+        } else {
+            buyerInfo.style.display = 'block';
+            cartItems.innerHTML = cart.map((item, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #ddd; padding-bottom:5px;">
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        £${item.price} | Stock: ${item.stock}
+                    </div>
+                    <button onclick="removeFromCart(${i})" style="background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">-</button>
+                </div>
+            `).join('');
+        }
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartCount();
+        showCartPage();
+    }
+
+const purchaseModal = document.getElementById('purchaseModal');
+    const purchaseMsg = document.getElementById('purchaseMsg');
+    const closePurchaseModal = document.getElementById('closePurchaseModal');
+
+    document.getElementById('buyBtn').onclick = () => {
+        const name = document.getElementById('buyerName').value;
+        const mobile = document.getElementById('buyerMobile').value;
+        const email = document.getElementById('buyerEmail').value;
+        const address = document.getElementById('buyerAddress').value;
+
+        if(!name || !mobile || !email || !address) {
+            alert('Please fill all buyer information.');
+            return;
+        }
+
+        purchaseMsg.innerHTML = `
+            Thank you, <strong>${name}</strong>!<br>
+            Your order of ${cart.length} item(s) has been placed.<br>
+            A confirmation has been sent to <strong>${email}</strong>.
+        `;
+
+        // Show modal
+        purchaseModal.style.display = 'flex';
+        setTimeout(() => {
+            purchaseModal.style.opacity = '1';
+            purchaseModal.querySelector('div').style.transform = 'scale(1)';
+        }, 50);
+
+        // Clear cart
+        cart = [];
+        updateCartCount();
+        document.getElementById('cartPage').style.display = 'none';
+    }
+
+    closePurchaseModal.onclick = () => {
+        purchaseModal.style.opacity = '0';
+        purchaseModal.querySelector('div').style.transform = 'scale(0.7)';
+        setTimeout(() => purchaseModal.style.display = 'none', 300);
+    }
+    </script>
+</body>
+</html>
